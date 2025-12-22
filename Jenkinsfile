@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_COMPOSE = 'docker-compose'
+        DOCKER_COMPOSE = 'docker compose'
         PROJECT_DIR = "${WORKSPACE}"
     }
     
@@ -20,7 +20,7 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker-compose build --no-cache gateway-service mediator-service data-service
+                            docker compose build --no-cache gateway-service mediator-service data-service
                         '''
                     }
                 }
@@ -53,7 +53,7 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker-compose up -d gateway-service mediator-service data-service prometheus grafana
+                            docker compose up -d gateway-service mediator-service data-service prometheus grafana
                         '''
                     }
                 }
