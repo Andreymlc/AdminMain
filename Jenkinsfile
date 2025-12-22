@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_COMPOSE = 'docker-compose'
+        PROJECT_DIR = "${WORKSPACE}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out code from repository...'
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                echo 'Building Docker images...'
+                script {
+                    dir("${PROJECT_DIR}") {
+                        sh '''
+                            docker-compose build --no-cache gateway-service mediator-service data-service
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                script {
+                    dir("${PROJECT_DIR}") {
+                        sh '''
+                            echo "Tests would run here"
+                            # docker-compose run --rm gateway-service dotnet test || true
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'master'
+                }
+            }
+            steps {
+                echo 'Deploying services...'
+                script {
+                    dir("${PROJECT_DIR}") {
+                        sh '''
+                            docker-compose up -d gateway-service mediator-service data-service prometheus grafana
+                        '''
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+            script {
+                echo "Build completed successfully at ${new Date()}"
+            }
+        }
+        failure {
+            echo 'Pipeline failed!'
+            script {
+                echo "Build failed at ${new Date()}"
+            }
+        }
+        always {
+            echo 'Pipeline finished.'
+            cleanWs()
+        }
+    }
+}
+

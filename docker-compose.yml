@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  gateway-service:
+    image: gateway-service
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "6004:6000"
+    depends_on:
+      - mediator-service
+
+  mediator-service:
+    image: mediator-service
+    build:
+      context: .
+      dockerfile: Dockerfile.internal
+    ports:
+      - "6001:6001"
+    depends_on:
+      - data-service
+
+  data-service:
+    image: data-service
+    build:
+      context: .
+      dockerfile: Dockerfile.data
+    ports:
+      - "6002:6002"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+networks:
+  default:
+    name: admin-microservices-net
+
