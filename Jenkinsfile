@@ -26,19 +26,6 @@ pipeline {
                 }
             }
         }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying services...'
-                script {
-                    dir("${PROJECT_DIR}") {
-                        sh '''
-                            docker compose up -d gateway-service mediator-service data-service prometheus grafana
-                        '''
-                    }
-                }
-            }
-        }
     }
     
     post {
