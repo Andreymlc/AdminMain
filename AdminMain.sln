@@ -11,11 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", 
 		Dockerfile.gateway = Dockerfile.gateway
 		Dockerfile.internal = Dockerfile.internal
 		Dockerfile.data = Dockerfile.data
-		..\docker-compose.yml = ..\docker-compose.yml
-		..\prometheus.yml = ..\prometheus.yml
-		..\Jenkinsfile = ..\Jenkinsfile
-		..\Dockerfile.jenkins = ..\Dockerfile.jenkins
-		..\jenkins-plugins.txt = ..\jenkins-plugins.txt
+		docker-compose.yml = docker-compose.yml
+		prometheus.yml = prometheus.yml
 	EndProjectSection
 EndProject
 Global
