@@ -42,7 +42,9 @@ services:
       - prometheus
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
     user: root
     ports:
       - "8090:8080"
