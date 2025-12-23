@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    parameters {
+        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Run deploy stage (start/refresh containers)')
+    }
+    
     environment {
         DOCKER_COMPOSE = 'docker compose'
         PROJECT_DIR = "${WORKSPACE}"
@@ -28,6 +32,9 @@ pipeline {
         }
         
         stage('Deploy') {
+            when {
+                expression { return params.DEPLOY == true }
+            }
             steps {
                 echo 'Deploying services...'
                 script {
