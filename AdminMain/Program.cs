@@ -4,6 +4,14 @@ using Prometheus;
 const int ApiPort = 6000;
 const string MediatorServiceUrl = "http://mediator-service:6001"; 
 
+var requestCounter = Metrics.CreateCounter(
+    "adminmain_requests_total",
+    "Total HTTP requests handled by AdminMain service",
+    new CounterConfiguration
+    {
+        LabelNames = ["path", "method", "status_code"]
+    });
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -20,6 +28,14 @@ var app = builder.Build();
 
 app.UseMetricServer("/metrics");
 app.UseHttpMetrics();
+
+app.Use(async (context, next) =>
+{
+    await next();
+    requestCounter
+        .WithLabels(context.Request.Path, context.Request.Method, context.Response.StatusCode.ToString())
+        .Inc();
+});
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

@@ -1,9 +1,16 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Prometheus;
-using System.Net.Http.Json;
 
 const int ApiPort = 6001;
-const string DataServiceUrl = "http://data-service:6002"; // docker-compose service name
+const string DataServiceUrl = "http://data-service:6002";
+
+var requestCounter = Metrics.CreateCounter(
+    "adminmediator_requests_total",
+    "Total HTTP requests handled by AdminMediatorService",
+    new CounterConfiguration
+    {
+        LabelNames = ["path", "method", "status_code"]
+    });
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +26,14 @@ var app = builder.Build();
 
 app.UseMetricServer("/metrics");
 app.UseHttpMetrics();
+
+app.Use(async (context, next) =>
+{
+    await next();
+    requestCounter
+        .WithLabels(context.Request.Path, context.Request.Method, context.Response.StatusCode.ToString())
+        .Inc();
+});
 
 app.MapHealthChecks("/check");
 
