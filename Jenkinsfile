@@ -27,27 +27,7 @@ pipeline {
             }
         }
         
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                script {
-                    dir("${PROJECT_DIR}") {
-                        sh '''
-                            echo "Tests would run here"
-                            # docker-compose run --rm gateway-service dotnet test || true
-                        '''
-                    }
-                }
-            }
-        }
-        
         stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'master'
-                }
-            }
             steps {
                 echo 'Deploying services...'
                 script {
