@@ -1,14 +1,9 @@
 pipeline {
     agent any
     
-    parameters {
-        booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Run deploy stage (start/refresh containers)')
-    }
-    
     environment {
         DOCKER_COMPOSE = 'docker compose'
         PROJECT_DIR = "${WORKSPACE}"
-        COMPOSE_PROJECT_NAME = 'admin-microservices'
     }
     
     stages {
@@ -25,7 +20,7 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker compose -p admin-microservices build --no-cache gateway-service mediator-service data-service
+                            docker compose build --no-cache gateway-service mediator-service data-service
                         '''
                     }
                 }
@@ -33,15 +28,12 @@ pipeline {
         }
         
         stage('Deploy') {
-            when {
-                expression { return params.DEPLOY == true }
-            }
             steps {
                 echo 'Deploying services...'
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker compose -p admin-microservices up -d gateway-service mediator-service data-service prometheus grafana
+                            docker compose up -d gateway-service mediator-service data-service prometheus grafana
                         '''
                     }
                 }
@@ -68,4 +60,3 @@ pipeline {
         }
     }
 }
-
