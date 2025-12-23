@@ -8,6 +8,7 @@ pipeline {
     environment {
         DOCKER_COMPOSE = 'docker compose'
         PROJECT_DIR = "${WORKSPACE}"
+        COMPOSE_PROJECT_NAME = 'admin-microservices'
     }
     
     stages {
@@ -24,7 +25,7 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker compose build --no-cache gateway-service mediator-service data-service
+                            docker compose -p admin-microservices build --no-cache gateway-service mediator-service data-service
                         '''
                     }
                 }
@@ -40,7 +41,7 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                            docker compose up -d gateway-service mediator-service data-service prometheus grafana
+                            docker compose -p admin-microservices up -d gateway-service mediator-service data-service prometheus grafana
                         '''
                     }
                 }
